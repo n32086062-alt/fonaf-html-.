@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNAF 4: The Bite of '83</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Start Menu */
+        #startMenu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #0a0014, #000);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+        
+        .title-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .neon-title {
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #ff00de,
+                0 0 30px #ff00de,
+                0 0 40px #ff00de;
+            margin-bottom: 1rem;
+            animation: flicker 1.5s infinite alternate;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #ff9900;
+            text-shadow: 0 0 10px #ff9900;
+        }
+        
+        .menu-content {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .start-btn {
+            background: transparent;
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px #00ffff;
+            box-shadow: 0 0 15px #00ffff, inset 0 0 15px #00ffff;
+            border-radius: 5px;
+            width: 300px;
+        }
+        
+        .start-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff, inset 0 0 20px #00ffff;
+            transform: scale(1.05);
+        }
+        
+        .story-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .story-text {
+            text-align: center;
+            color: #ddd;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .controls-info {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            min-width: 120px;
+        }
+        
+        .control-key {
+            background: #222;
+            color: #ff9900;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .control-desc {
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+        }
+        
+        /* Game Screen */
+        #gameScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            display: none;
+            z-index: 50;
+            flex-direction: column;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid #333;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .info-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 8px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .night-counter .info-value {
+            color: #ff5555;
+            text-shadow: 0 0 5px #ff5555;
+        }
+        
+        .time-counter .info-value {
+            color: #55ff55;
+            text-shadow: 0 0 5px #55ff55;
+        }
+        
+        .power-counter .info-value {
+            color: #5555ff;
+            text-shadow: 0 0 5px #5555ff;
+        }
+        
+        .game-content {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .room-view {
+            flex: 1;
+            background: linear-gradient(to bottom, #0a0a2a, #000);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .bedroom {
+            width: 80%;
+            height: 80%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(50, 50, 80, 0.3) 10px, transparent 20px),
+                radial-gradient(circle at 80% 70%, rgba(50, 50, 80, 0.3) 15px, transparent 25px),
+                linear-gradient(to bottom, #1a1a3a, #0a0a2a);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 100, 0.5);
+        }
+        
+        .bed {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 150px;
+            background: 
+                linear-gradient(to bottom, #3a2a1a, #2a1a0a),
+                repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(80, 60, 40, 0.5) 28px, rgba(80, 60, 40, 0.5) 30px);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .bed:before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: 
+                linear-gradient(to bottom, #4a3a2a, #3a2a1a),
+                repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(100, 80, 60, 0.5) 28px, rgba(100, 80, 60, 0.5) 30px);
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .pillow {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(to bottom, #6a5a4a, #5a4a3a);
+            border-radius: 20px;
+        }
+        
+        .door {
+            position: absolute;
+            bottom: 0;
+            width: 100px;
+            height: 200px;
+            background: 
+                linear-gradient(to right, #5a2d0c, #4a1d0c),
+                repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(90, 60, 30, 0.5) 48px, rgba(90, 60, 30, 0.5) 50px);
+            border: 2px solid #3d1f06;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .left-door {
+            left: 50px;
+        }
+        
+        .right-door {
+            right: 50px;
+        }
+        
+        .door.closed {
+            background: 
+                linear-gradient(to right, #8B0000, #600000),
+                repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(120, 30, 30, 0.5) 48px, rgba(120, 30, 30, 0.5) 50px);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+        
+        .doorknob {
+            position: absolute;
+            top: 50%;
+            width: 10px;
+            height: 10px;
+            background: #d4af37;
+            border-radius: 50%;
+        }
+        
+        .left-door .doorknob {
+            right: 10px;
+        }
+        
+        .right-door .doorknob {
+            left: 10px;
+        }
+        
+        .closet {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 250px;
+            background: 
+                linear-gradient(to right, #222, #111),
+                repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(50, 50, 50, 0.5) 28px, rgba(50, 50, 50, 0.5) 30px);
+            border: 2px solid #111;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            transition: all 0.3s ease;
+        }
+        
+        .closet.open {
+            background: 
+                linear-gradient(to right, #333, #222),
+                repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(70, 70, 70, 0.5) 28px, rgba(70, 70, 70, 0.5) 30px);
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+        }
+        
+        .closet-door {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: 
+                linear-gradient(to right, #333, #222),
+                repeating-linear-gradient(90deg, transparent, transparent 13px, rgba(70, 70, 70, 0.5) 13px, rgba(70, 70, 70, 0.5) 15px);
+        }
+        
+        .closet-left {
+            left: 0;
+            border-right: 1px solid #111;
+        }
+        
+        .closet-right {
+            right: 0;
+            border-left: 1px solid #111;
+        }
+        
+        .window {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 150px;
+            background: 
+                linear-gradient(to bottom, #1a3a5a, #0a2a4a),
+                repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(100, 150, 200, 0.3) 48px, rgba(100, 150, 200, 0.3) 50px),
+                repeating-linear-gradient(transparent, transparent 48px, rgba(100, 150, 200, 0.3) 48px, rgba(100, 150, 200, 0.3) 50px);
+            border: 5px solid #2a1a0a;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+        }
+        
+        .controls-panel {
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid #333;
+            gap: 15px;
+        }
+        
+        .control-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 12px 20px;
+            cursor: pointer;
+            text-shadow: 0 0 5px #00ffff;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            font-size: 1rem;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .control-btn.active {
+            background: rgba(255, 0, 0, 0.7);
+            border-color: #ff0000;
+            color: #ff0000;
+            text-shadow: 0 0 5px #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
+        .control-btn.flashlight-active {
+            background: rgba(255, 255, 0, 0.7);
+            border-color: #ffff00;
+            color: #ffff00;
+            text-shadow: 0 0 5px #ffff00;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        }
+        
+        .btn-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .btn-text {
+            font-size: 0.9rem;
+        }
+        
+        .animatronic {
+            position: absolute;
+            width: 150px;
+            height: 200px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            display: none;
+            filter: brightness(0.5) contrast(1.5);
+            transition: all 0.5s ease;
+        }
+        
+        .freddy {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="20" y="20" width="60" height="80" fill="%238B4513" rx="10"/><circle cx="35" cy="40" r="10" fill="%23000"/><circle cx="65" cy="40" r="10" fill="%23000"/><rect x="35" y="65" width="30" height="10" fill="%23000" rx="5"/><path d="M30,110 L70,110 L65,130 L35,130 Z" fill="%238B4513"/></svg>');
+            top: 100px;
+            right: -150px;
+        }
+        
+        .bonnie {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="20" y="20" width="60" height="80" fill="%23002FA7" rx="10"/><circle cx="35" cy="40" r="10" fill="%23000"/><circle cx="65" cy="40" r="10" fill="%23000"/><rect x="35" y="65" width="30" height="10" fill="%23000" rx="5"/><path d="M30,110 L70,110 L65,130 L35,130 Z" fill="%23002FA7"/></svg>');
+            top: 100px;
+            left: -150px;
+        }
+        
+        .chica {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="20" y="20" width="60" height="80" fill="%23FFD700" rx="10"/><circle cx="35" cy="40" r="10" fill="%23000"/><circle cx="65" cy="40" r="10" fill="%23000"/><rect x="35" y="65" width="30" height="10" fill="%23000" rx="5"/><path d="M30,110 L70,110 L65,130 L35,130 Z" fill="%23FFD700"/></svg>');
+            bottom: 100px;
+            right: -150px;
+        }
+        
+        .foxy {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect x="20" y="20" width="60" height="80" fill="%23DC143C" rx="10"/><circle cx="35" cy="40" r="10" fill="%23000"/><circle cx="65" cy="40" r="10" fill="%23000"/><rect x="35" y="65" width="30" height="10" fill="%23000" rx="5"/><path d="M30,110 L70,110 L65,130 L35,130 Z" fill="%23DC143C"/></svg>');
+            bottom: 100px;
+            left: -150px;
+        }
+        
+        .flashlight {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+        
+        .flashlight-on {
+            opacity: 0.7;
+        }
+        
+        .flashlight-beam {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,200,0.9) 0%, rgba(255,255,150,0.5) 30%, rgba(255,255,100,0.2) 70%, transparent 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(20px);
+        }
+        
+        .jumpscare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ff0000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .jumpscare-img {
+            width: 80%;
+            height: 80%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .audio-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 60;
+        }
+        
+        .audio-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #ff9900;
+            color: #ff9900;
+            padding: 8px 15px;
+            cursor: pointer;
+            text-shadow: 0 0 5px #ff9900;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 
+                    0 0 5px #fff,
+                    0 0 10px #fff,
+                    0 0 20px #ff00de,
+                    0 0 30px #ff00de,
+                    0 0 40px #ff00de;
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Start Menu -->
+        <div id="startMenu">
+            <div class="title-container">
+                <h1 class="neon-title">FIVE NIGHTS AT FREDDY'S 4</h1>
+                <h2 class="subtitle">THE BITE OF '83</h2>
+            </div>
+            
+            <div class="menu-content">
+                <button class="start-btn" id="startButton">START NIGHTMARE</button>
+                
+                <div class="story-box">
+                    <div class="story-text">
+                        <p>You are a child trapped in a coma-induced nightmare after the tragic "Bite of '83".</p>
+                        <p>Your older brother shoved you into the mouth of the Fredbear animatronic as a prank, but the machinery malfunctioned.</p>
+                        <p>Now, monstrous versions of the animatronics haunt your dreams. Survive until 6 AM to escape the nightmare.</p>
+                        <p>Use the doors to block animatronics and the flashlight to see in the dark.</p>
+                    </div>
+                </div>
+                
+                <div class="controls-info">
+                    <div class="control-item">
+                        <div class="control-key">LEFT DOOR</div>
+                        <div class="control-desc">Block animatronics from left</div>
+                    </div>
+                    <div class="control-item">
+                        <div class="control-key">RIGHT DOOR</div>
+                        <div class="control-desc">Block animatronics from right</div>
+                    </div>
+                    <div class="control-item">
+                        <div class="control-key">CLOSET</div>
+                        <div class="control-desc">Check for hidden threats</div>
+                    </div>
+                    <div class="control-item">
+                        <div class="control-key">FLASHLIGHT</div>
+                        <div class="control-desc">See in the dark</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="audio-controls">
+                <button class="audio-btn" id="muteBtn">MUTE AUDIO</button>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="gameScreen">
+            <div class="game-header">
+                <div class="game-info">
+                    <div class="info-box night-counter">
+                        <div class="info-label">NIGHT</div>
+                        <div class="info-value" id="nightNumber">1</div>
+                    </div>
+                    <div class="info-box time-counter">
+                        <div class="info-label">TIME</div>
+                        <div class="info-value">12:00 AM</div>
+                    </div>
+                    <div class="info-box power-counter">
+                        <div class="info-label">POWER</div>
+                        <div class="info-value">100%</div>
+                    </div>
+                </div>
+                
+                <div class="audio-controls">
+                    <button class="audio-btn" id="gameMuteBtn">MUTE AUDIO</button>
+                </div>
+            </div>
+            
+            <div class="game-content">
+                <div class="room-view">
+                    <div class="bedroom">
+                        <div class="window"></div>
+                        
+                        <div class="bed">
+                            <div class="pillow"></div>
+                        </div>
+                        
+                        <div class="door left-door" id="leftDoor">
+                            <div class="doorknob"></div>
+                        </div>
+                        <div class="door right-door" id="rightDoor">
+                            <div class="doorknob"></div>
+                        </div>
+                        
+                        <div class="closet" id="closet">
+                            <div class="closet-door closet-left"></div>
+                            <div class="closet-door closet-right"></div>
+                        </div>
+                        
+                        <div class="animatronic freddy" id="freddy"></div>
+                        <div class="animatronic bonnie" id="bonnie"></div>
+                        <div class="animatronic chica" id="chica"></div>
+                        <div class="animatronic foxy" id="foxy"></div>
+                        
+                        <div class="flashlight" id="flashlight">
+                            <div class="flashlight-beam"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <button class="control-btn" id="leftDoorBtn">
+                    <div class="btn-icon">🚪</div>
+                    <div class="btn-text">LEFT DOOR</div>
+                </button>
+                <button class="control-btn" id="rightDoorBtn">
+                    <div class="btn-icon">🚪</div>
+                    <div class="btn-text">RIGHT DOOR</div>
+                </button>
+                <button class="control-btn" id="closetBtn">
+                    <div class="btn-icon">🚪</div>
+                    <div class="btn-text">CHECK CLOSET</div>
+                </button>
+                <button class="control-btn" id="flashlightBtn">
+                    <div class="btn-icon">🔦</div>
+                    <div class="btn-text">FLASHLIGHT</div>
+                </button>
+            </div>
+            
+            <!-- Jumpscare Screen -->
+            <div class="jumpscare" id="jumpscare">
+                <div class="jumpscare-img"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let currentNight = 1;
+        let gameTime = 0; // In seconds
+        let gameActive = false;
+        let leftDoorClosed = false;
+        let rightDoorClosed = false;
+        let closetChecked = false;
+        let flashlightOn = false;
+        let audioMuted = false;
+        let powerLevel = 100;
+        
+        // Animatronic positions
+        let freddyPosition = -150;
+        let bonniePosition = -150;
+        let chicaPosition = -150;
+        let foxyPosition = -150;
+        
+        // Animatronic aggression levels
+        let freddyAggression = 1;
+        let bonnieAggression = 1;
+        let chicaAggression = 1;
+        let foxyAggression = 1;
+        
+        // DOM elements
+        const startMenu = document.getElementById('startMenu');
+        const gameScreen = document.getElementById('gameScreen');
+        const startButton = document.getElementById('startButton');
+        const nightNumber = document.getElementById('nightNumber');
+        const timeCounter = document.querySelector('.time-counter .info-value');
+        const jumpscare = document.getElementById('jumpscare');
+        const closet = document.getElementById('closet');
+        const flashlight = document.getElementById('flashlight');
+        const leftDoor = document.getElementById('leftDoor');
+        const rightDoor = document.getElementById('rightDoor');
+        
+        const leftDoorBtn = document.getElementById('leftDoorBtn');
+        const rightDoorBtn = document.getElementById('rightDoorBtn');
+        const closetBtn = document.getElementById('closetBtn');
+        const flashlightBtn = document.getElementById('flashlightBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const gameMuteBtn = document.getElementById('gameMuteBtn');
+        
+        const freddy = document.getElementById('freddy');
+        const bonnie = document.getElementById('bonnie');
+        const chica = document.getElementById('chica');
+        const foxy = document.getElementById('foxy');
+        
+        // Start game
+        startButton.addEventListener('click', startGame);
+        muteBtn.addEventListener('click', toggleMute);
+        gameMuteBtn.addEventListener('click', toggleMute);
+        
+        function startGame() {
+            startMenu.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            gameActive = true;
+            nightNumber.textContent = currentNight;
+            
+            // Start game loop
+            gameLoop();
+        }
+        
+        // Toggle audio mute
+        function toggleMute() {
+            audioMuted = !audioMuted;
+            const muteText = audioMuted ? "UNMUTE AUDIO" : "MUTE AUDIO";
+            muteBtn.textContent = muteText;
+            gameMuteBtn.textContent = muteText;
+        }
+        
+        // Game loop
+        function gameLoop() {
+            if (!gameActive) return;
+            
+            // Update game time
+            gameTime += 1;
+            updateTimeDisplay();
+            
+            // Update power (slowly drain when doors are closed or flashlight is on)
+            updatePower();
+            
+            // Move animatronics
+            moveAnimatronics();
+            
+            // Check for jumpscares
+            checkJumpscares();
+            
+            // Continue loop
+            setTimeout(gameLoop, 1000);
+        }
+        
+        // Update time display
+        function updateTimeDisplay() {
+            const hours = Math.floor(gameTime / 3600) + 12;
+            const minutes = Math.floor((gameTime % 3600) / 60);
+            const ampm = hours >= 12 ? 'AM' : 'PM';
+            const displayHours = hours % 12 || 12;
+            const displayMinutes = minutes.toString().padStart(2, '0');
+            
+            timeCounter.textContent = `${displayHours}:${displayMinutes} ${ampm}`;
+            
+            // Check for game end (6 AM)
+            if (hours >= 6 && hours < 7 && minutes === 0) {
+                endNight();
+            }
+        }
+        
+        // Update power level
+        function updatePower() {
+            // Drain power when doors are closed or flashlight is on
+            if (leftDoorClosed || rightDoorClosed) {
+                powerLevel -= 0.5;
+            }
+            if (flashlightOn) {
+                powerLevel -= 0.3;
+            }
+            
+            // Ensure power doesn't go below 0
+            powerLevel = Math.max(0, powerLevel);
+            
+            // Update power display
+            document.querySelector('.power-counter .info-value').textContent = `${Math.round(powerLevel)}%`;
+            
+            // If power runs out, disable doors and flashlight
+            if (powerLevel <= 0) {
+                leftDoorClosed = false;
+                rightDoorClosed = false;
+                flashlightOn = false;
+                
+                leftDoorBtn.classList.remove('active');
+                rightDoorBtn.classList.remove('active');
+                flashlightBtn.classList.remove('flashlight-active');
+                flashlight.classList.remove('flashlight-on');
+                
+                leftDoor.classList.remove('closed');
+                rightDoor.classList.remove('closed');
+            }
+        }
+        
+        // Move animatronics
+        function moveAnimatronics() {
+            // Freddy movement
+            if (Math.random() < 0.3 * freddyAggression && powerLevel > 0) {
+                freddyPosition += 20;
+                freddy.style.right = `${freddyPosition}px`;
+                if (freddyPosition > -50) freddy.style.display = 'block';
+                
+                // Make animatronic more visible when flashlight is on
+                if (flashlightOn && freddyPosition > 0) {
+                    freddy.style.filter = 'brightness(1.2) contrast(1.2)';
+                } else {
+                    freddy.style.filter = 'brightness(0.5) contrast(1.5)';
+                }
+            }
+            
+            // Bonnie movement
+            if (Math.random() < 0.3 * bonnieAggression && powerLevel > 0) {
+                bonniePosition += 20;
+                bonnie.style.left = `${bonniePosition}px`;
+                if (bonniePosition > -50) bonnie.style.display = 'block';
+                
+                if (flashlightOn && bonniePosition > 0) {
+                    bonnie.style.filter = 'brightness(1.2) contrast(1.2)';
+                } else {
+                    bonnie.style.filter = 'brightness(0.5) contrast(1.5)';
+                }
+            }
+            
+            // Chica movement
+            if (Math.random() < 0.3 * chicaAggression && powerLevel > 0) {
+                chicaPosition += 20;
+                chica.style.right = `${chicaPosition}px`;
+                if (chicaPosition > -50) chica.style.display = 'block';
+                
+                if (flashlightOn && chicaPosition > 0) {
+                    chica.style.filter = 'brightness(1.2) contrast(1.2)';
+                } else {
+                    chica.style.filter = 'brightness(0.5) contrast(1.5)';
+                }
+            }
+            
+            // Foxy movement
+            if (Math.random() < 0.3 * foxyAggression && powerLevel > 0) {
+                foxyPosition += 20;
+                foxy.style.left = `${foxyPosition}px`;
+                if (foxyPosition > -50) foxy.style.display = 'block';
+                
+                if (flashlightOn && foxyPosition > 0) {
+                    foxy.style.filter = 'brightness(1.2) contrast(1.2)';
+                } else {
+                    foxy.style.filter = 'brightness(0.5) contrast(1.5)';
+                }
+            }
+        }
+        
+        // Check for jumpscares
+        function checkJumpscares() {
+            // Freddy jumpscare
+            if (freddyPosition >= 200 && !rightDoorClosed) {
+                triggerJumpscare('freddy');
+            }
+            
+            // Bonnie jumpscare
+            if (bonniePosition >= 200 && !leftDoorClosed) {
+                triggerJumpscare('bonnie');
+            }
+            
+            // Chica jumpscare
+            if (chicaPosition >= 200 && !closetChecked) {
+                triggerJumpscare('chica');
+            }
+            
+            // Foxy jumpscare
+            if (foxyPosition >= 200) {
+                triggerJumpscare('foxy');
+            }
+        }
+        
+        // Trigger jumpscare
+        function triggerJumpscare(animatronic) {
+            gameActive = false;
+            jumpscare.style.display = 'flex';
+            
+            // Set jumpscare image based on animatronic
+            const jumpscareImg = document.querySelector('.jumpscare-img');
+            jumpscareImg.style.backgroundImage = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><rect width="100" height="150" fill="%23ff0000"/><text x="50" y="75" font-family="Arial" font-size="20" fill="white" text-anchor="middle">${animatronic.toUpperCase()} JUMPSCARE!</text></svg>')`;
+            
+            // Reset game after jumpscare
+            setTimeout(() => {
+                jumpscare.style.display = 'none';
+                resetGame();
+            }, 3000);
+        }
+        
+        // End night
+        function endNight() {
+            gameActive = false;
+            alert(`You survived Night ${currentNight}!`);
+            currentNight++;
+            resetGame();
+        }
+        
+        // Reset game
+        function resetGame() {
+            gameTime = 0;
+            freddyPosition = -150;
+            bonniePosition = -150;
+            chicaPosition = -150;
+            foxyPosition = -150;
+            powerLevel = 100;
+            
+            freddy.style.display = 'none';
+            bonnie.style.display = 'none';
+            chica.style.display = 'none';
+            foxy.style.display = 'none';
+            
+            leftDoorClosed = false;
+            rightDoorClosed = false;
+            closetChecked = false;
+            flashlightOn = false;
+            
+            // Update UI
+            leftDoorBtn.classList.remove('active');
+            rightDoorBtn.classList.remove('active');
+            closetBtn.classList.remove('active');
+            closet.classList.remove('open');
+            flashlightBtn.classList.remove('flashlight-active');
+            flashlight.classList.remove('flashlight-on');
+            
+            leftDoor.classList.remove('closed');
+            rightDoor.classList.remove('closed');
+            
+            // Increase aggression for next night
+            freddyAggression += 0.2;
+            bonnieAggression += 0.2;
+            chicaAggression += 0.2;
+            foxyAggression += 0.2;
+            
+            if (gameActive) {
+                gameLoop();
+            }
+        }
+        
+        // Door controls
+        leftDoorBtn.addEventListener('click', () => {
+            if (powerLevel > 0) {
+                leftDoorClosed = !leftDoorClosed;
+                leftDoorBtn.classList.toggle('active', leftDoorClosed);
+                leftDoor.classList.toggle('closed', leftDoorClosed);
+                
+                if (leftDoorClosed && bonniePosition > 0) {
+                    bonniePosition = -50;
+                    bonnie.style.left = `${bonniePosition}px`;
+                }
+            }
+        });
+        
+        rightDoorBtn.addEventListener('click', () => {
+            if (powerLevel > 0) {
+                rightDoorClosed = !rightDoorClosed;
+                rightDoorBtn.classList.toggle('active', rightDoorClosed);
+                rightDoor.classList.toggle('closed', rightDoorClosed);
+                
+                if (rightDoorClosed && freddyPosition > 0) {
+                    freddyPosition = -50;
+                    freddy.style.right = `${freddyPosition}px`;
+                }
+            }
+        });
+        
+        // Closet control
+        closetBtn.addEventListener('click', () => {
+            closetChecked = !closetChecked;
+            closetBtn.classList.toggle('active', closetChecked);
+            closet.classList.toggle('open', closetChecked);
+            
+            if (closetChecked && chicaPosition > 0) {
+                chicaPosition = -50;
+                chica.style.right = `${chicaPosition}px`;
+            }
+        });
+        
+        // Flashlight control
+        flashlightBtn.addEventListener('click', () => {
+            if (powerLevel > 0) {
+                flashlightOn = !flashlightOn;
+                flashlightBtn.classList.toggle('flashlight-active', flashlightOn);
+                flashlight.classList.toggle('flashlight-on', flashlightOn);
+                
+                // Flashlight temporarily pushes back animatronics and makes them more visible
+                if (flashlightOn) {
+                    freddyPosition = Math.max(freddyPosition - 30, -150);
+                    bonniePosition = Math.max(bonniePosition - 30, -150);
+                    chicaPosition = Math.max(chicaPosition - 30, -150);
+                    foxyPosition = Math.max(foxyPosition - 30, -150);
+                    
+                    freddy.style.right = `${freddyPosition}px`;
+                    bonnie.style.left = `${bonniePosition}px`;
+                    chica.style.right = `${chicaPosition}px`;
+                    foxy.style.left = `${foxyPosition}px`;
+                    
+                    // Make animatronics more visible when flashlight is on
+                    if (freddyPosition > 0) {
+                        freddy.style.filter = 'brightness(1.2) contrast(1.2)';
+                    }
+                    if (bonniePosition > 0) {
+                        bonnie.style.filter = 'brightness(1.2) contrast(1.2)';
+                    }
+                    if (chicaPosition > 0) {
+                        chica.style.filter = 'brightness(1.2) contrast(1.2)';
+                    }
+                    if (foxyPosition > 0) {
+                        foxy.style.filter = 'brightness(1.2) contrast(1.2)';
+                    }
+                } else {
+                    // Reset filter when flashlight is off
+                    freddy.style.filter = 'brightness(0.5) contrast(1.5)';
+                    bonnie.style.filter = 'brightness(0.5) contrast(1.5)';
+                    chica.style.filter = 'brightness(0.5) contrast(1.5)';
+                    foxy.style.filter = 'brightness(0.5) contrast(1.5)';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
